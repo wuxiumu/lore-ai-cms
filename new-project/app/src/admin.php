@@ -58,6 +58,8 @@ if ($path==='/admin/site') {
     if ($isPost) {
         $s=array_merge($s,array_intersect_key($_POST,array_flip(['name','host','base_url','description','seo_title','seo_description','seo_keywords','content_topic','topic_keywords'])));
         foreach(['name','host','base_url','description','seo_title','seo_description','seo_keywords','content_topic','topic_keywords'] as $k) $s[$k]=trim((string)$s[$k]);
+        $s['image_count']=filter_var($_POST['image_count']??5,FILTER_VALIDATE_INT);
+        if($s['image_count']===false || $s['image_count']<1 || $s['image_count']>20)$error='出图数量必须为1—20的整数。';
         $s['base_url']='https://'.strtolower(trim($s['host']));
         $s['host']=strtolower($s['host']); $s['base_url']=rtrim($s['base_url'],'/'); $s['indexable']=isset($_POST['indexable'])?1:0;
         $url=parse_url($s['base_url']);
@@ -72,7 +74,7 @@ if ($path==='/admin/site') {
                 if ($id) { $args[]=$id; query('UPDATE mvp_sites SET host=?,base_url=?,name=?,description=?,indexable=? WHERE id=?',$args); }
                 else query('INSERT INTO mvp_sites(host,base_url,name,description,indexable,created_at) VALUES(?,?,?,?,?,NOW())',$args);
                 $savedId=$id?:((int)db()->lastInsertId());
-                query('UPDATE mvp_sites SET seo_title=?,seo_description=?,seo_keywords=?,content_topic=?,topic_keywords=? WHERE id=?',[$s['seo_title'],$s['seo_description'],$s['seo_keywords'],$s['content_topic'],$s['topic_keywords'],$savedId]);
+                query('UPDATE mvp_sites SET seo_title=?,seo_description=?,seo_keywords=?,content_topic=?,topic_keywords=?,image_count=? WHERE id=?',[$s['seo_title'],$s['seo_description'],$s['seo_keywords'],$s['content_topic'],$s['topic_keywords'],$s['image_count'],$savedId]);
                 themeInit($savedId);
                 redirect('/admin?updated=1');
             } catch(PDOException $e) { if($e->getCode()==='23000') $error='此域名已被其他站点使用。'; else throw $e; }
@@ -80,7 +82,7 @@ if ($path==='/admin/site') {
     }
     $body=adminNav().'<section class="panel narrow"><p class="eyebrow">SITE SETTINGS</p><h1>'.($id?'编辑站点':'新建独立站点').'</h1><p class="notice">域名保存在本站设置，打包时自动读取。每个站点的内容主题和页面文件互相独立；保存不会自动上传服务器。</p>';
     if ($error) $body.='<p class="notice error">'.h($error).'</p>';
-    $body.='<form method="post">'.csrf().field('站点名称','name',$s['name']).field('域名（不带端口）','host',$s['host']).textfield('站点简介','description',$s['description']).field('首页 Title','seo_title',$s['seo_title']??'','text',false).textfield('首页 Description','seo_description',$s['seo_description']??'').field('Keywords（逗号分隔）','seo_keywords',$s['seo_keywords']??'','text',false).textfield('内容主题 / 写作方向','content_topic',$s['content_topic']??'').field('选题关键词（逗号分隔）','topic_keywords',$s['topic_keywords']??'','text',false).'<label class="check"><input type="checkbox" name="indexable" value="1"'.($s['indexable']?' checked':'').'> 正式导出时允许搜索引擎收录</label><p class="hint">本地预览始终禁止收录。文章页使用文章标题和摘要；首页使用本站 TDK。</p><button>保存站点</button></form></section>';
+    $body.='<form method="post">'.csrf().field('站点名称','name',$s['name']).field('域名（不带端口）','host',$s['host']).textfield('站点简介','description',$s['description']).field('首页 Title','seo_title',$s['seo_title']??'','text',false).textfield('首页 Description','seo_description',$s['seo_description']??'').field('Keywords（逗号分隔）','seo_keywords',$s['seo_keywords']??'','text',false).textfield('内容主题 / 写作方向','content_topic',$s['content_topic']??'').field('选题关键词（逗号分隔）','topic_keywords',$s['topic_keywords']??'','text',false).field('转图数量（1—20张，默认5张）','image_count',$s['image_count']??5,'number').'<p class="hint">文章页“转图”会复制正文和简约漫画素描提示词，不调用模型。静态站点修改数量后需重新打包。</p><label class="check"><input type="checkbox" name="indexable" value="1"'.($s['indexable']?' checked':'').'> 正式导出时允许搜索引擎收录</label><p class="hint">本地预览始终禁止收录。文章页使用文章标题和摘要；首页使用本站 TDK。</p><button>保存站点</button></form></section>';
     page('站点设置',$body); return;
 }
 if ($path==='/admin/article/preview') {

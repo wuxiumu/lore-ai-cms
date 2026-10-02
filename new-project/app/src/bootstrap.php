@@ -51,7 +51,10 @@ function page(string $title, string $body, ?array $site=null, string $descriptio
     $homeTemplate=$home || $pagePath==='/' || str_starts_with($pagePath,'/page/');
     $kind=$structured?'article':($homeTemplate?'home':(str_contains($canonical,'/category/')?'category':'simple'));
     $vars=['{{site_name}}'=>h($brand),'{{title}}'=>h($title),'{{description}}'=>h($description?:$site['description']),'{{topic}}'=>h($site['content_topic']??''),'{{year}}'=>date('Y'),'{{canonical}}'=>h($canonical),'{{about_url}}'=>defined('STATIC_EXPORT')?'/about.html':'/about','{{css_url}}'=>$asset.'style.css','{{js_url}}'=>$asset.'script.js','{{nonce}}'=>h(defined('CSP_NONCE')?CSP_NONCE:'')];
-    $content=strtr($files[$kind.'.html'],$vars+['{{content}}'=>$body]);
+    $template=$files[$kind.'.html'];
+    if($kind==='article')$template=preg_replace('~<section class="story-tools".*?</section>~s','',$template);
+    $content=strtr($template,$vars+['{{content}}'=>$body]);
+    if($kind==='article')$content.=readerTools($site);
     $html=strtr($files['layout.html'],$vars+['{{head}}'=>$head,'{{content}}'=>$content]);
     $footer=readerFooter($site);
     if(str_contains($html,'<footer'))$html=preg_replace('~<footer\b~',$footer.'<footer',$html,1);
