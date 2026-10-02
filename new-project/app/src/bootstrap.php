@@ -3,6 +3,7 @@ declare(strict_types=1);
 const ROOT = __DIR__ . '/../../..';
 date_default_timezone_set('Asia/Shanghai');
 require_once __DIR__.'/themes.php';
+require_once __DIR__.'/reader.php';
 function db(): PDO {
     static $db;
     if (!$db) {
@@ -45,13 +46,17 @@ function page(string $title, string $body, ?array $site=null, string $descriptio
     $files=$site['_theme']??themeRead((int)$site['id']);
     preg_match('~<head>(.*?)</head>~s',$default,$matches);
     $asset=defined('STATIC_EXPORT')?'/theme/':'/theme/site-'.(int)$site['id'].'/';
-    $head=str_replace('/style.css',$asset.'style.css',$matches[1]);
+    $head=str_replace('/style.css',$asset.'style.css',$matches[1]).'<link rel="stylesheet" href="/reader.css">';
     $pagePath=parse_url($canonical,PHP_URL_PATH)?:'/';
     $homeTemplate=$home || $pagePath==='/' || str_starts_with($pagePath,'/page/');
     $kind=$structured?'article':($homeTemplate?'home':(str_contains($canonical,'/category/')?'category':'simple'));
     $vars=['{{site_name}}'=>h($brand),'{{title}}'=>h($title),'{{description}}'=>h($description?:$site['description']),'{{topic}}'=>h($site['content_topic']??''),'{{year}}'=>date('Y'),'{{canonical}}'=>h($canonical),'{{about_url}}'=>defined('STATIC_EXPORT')?'/about.html':'/about','{{css_url}}'=>$asset.'style.css','{{js_url}}'=>$asset.'script.js','{{nonce}}'=>h(defined('CSP_NONCE')?CSP_NONCE:'')];
     $content=strtr($files[$kind.'.html'],$vars+['{{content}}'=>$body]);
-    echo strtr($files['layout.html'],$vars+['{{head}}'=>$head,'{{content}}'=>$content]);
+    $html=strtr($files['layout.html'],$vars+['{{head}}'=>$head,'{{content}}'=>$content]);
+    $footer=readerFooter($site);
+    if(str_contains($html,'<footer'))$html=preg_replace('~<footer\b~',$footer.'<footer',$html,1);
+    else $html=str_replace('</body>',$footer.'</body>',$html);
+    echo $html;
 }
 function field(string $label, string $name, mixed $value='', string $type='text', bool $required=true): string { return '<label>'.h($label).'<input type="'.h($type).'" name="'.h($name).'" value="'.h($value).'"'.($required?' required':'').'></label>'; }
 function textfield(string $label,string $name,mixed $value='',int $rows=4):string { return '<label>'.h($label).'<textarea name="'.h($name).'" rows="'.$rows.'">'.h($value).'</textarea></label>'; }

@@ -36,9 +36,9 @@ foreach($groups as $category=>$items) {
         emitpage($path,($category?:'奇闻逸事与都市趣闻').($p>1?' · 第'.$p.'页':''),$body,($category?$category.'：':'').$site['description']);
     }
 }
-foreach($articles as $a) {
+foreach($articles as $articleIndex=>$a) {
     $url=articleurl($a);
-    $body='<div class="breadcrumbs"><a href="/">首页</a> / <a href="'.caturl($a['category']).'">'.h($a['category']).'</a></div><article class="reading"><p class="eyebrow">'.h($a['category']).'</p><h1>'.h($a['title']).'</h1><p class="meta">发布于 '.h(substr($a['published_at'],0,10)).' · 更新于 '.h(substr($a['updated_at'],0,10)).'</p><p class="lead">'.h($a['description']).'</p>'.cover_html($a['meta'],$a['title']).'<p class="byline">'.h($a['meta']['author']??$site['name'].'编辑部').' · 约 '.max(1,(int)ceil(mb_strlen($a['content'])/400)).' 分钟阅读</p><div class="prose">'.render_story($a['content']).'</div>'.story_sources($a['meta']).'</article><section class="related"><h2>继续阅读</h2>';
+    $body='<div class="breadcrumbs"><a href="/">首页</a> / <a href="'.caturl($a['category']).'">'.h($a['category']).'</a></div><article class="reading"><p class="eyebrow">'.h($a['category']).'</p><h1>'.h($a['title']).'</h1><p class="meta">发布于 '.h(substr($a['published_at'],0,10)).' · 更新于 '.h(substr($a['updated_at'],0,10)).'</p><p class="lead">'.h($a['description']).'</p>'.cover_html($a['meta'],$a['title']).'<p class="byline">'.h($a['meta']['author']??$site['name'].'编辑部').' · 约 '.max(1,(int)ceil(mb_strlen($a['content'])/400)).' 分钟阅读</p><div class="prose">'.render_story($a['content']).'</div>'.story_sources($a['meta']).'</article>'.readerNavigation($articles[$articleIndex-1]??null,$articles[$articleIndex+1]??null).'<section class="related"><h2>继续阅读</h2>';
     $related=array_values(array_filter($articles,fn($x)=>$x['id']!==$a['id']));
     usort($related,fn($x,$y)=>(int)($y['category']===$a['category'])<=>(int)($x['category']===$a['category']));
     foreach(array_slice($related,0,4) as $r) $body.='<p><a href="'.articleurl($r).'">'.h($r['title']).' →</a></p>';
