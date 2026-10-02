@@ -1,0 +1,28 @@
+# Private runtime: credentials, database backups, model results and sessions
+/.local/
+/.claude/
+# Historical project: licensing has not been verified
+/legacy-project/
+# Owner's editorial data and generated deployment artifacts
+/catalogs/
+/dist/
+# Local execution records; public documentation lives in doc/open-source/
+/doc/*
+!/doc/open-source/
+# Machine / editor / dependency output
+.DS_Store
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+*.log
+*.sql
+*.sqlite*
+*.zip
+*.pem
+*.key
+node_modules/
+vendor/
+.idea/
+.vscode/

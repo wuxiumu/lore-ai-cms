@@ -1,0 +1,19 @@
+{
+  "site_id": 2,
+  "site_name": "街巷奇闻",
+  "daily_limit": 3,
+  "max_per_run": 3,
+  "mode": "publish",
+  "llm": {"base_url": "", "model": "", "api_key_env": "EDITORIAL_API_KEY"},
+  "feeds": [
+    {"name": "中新网社会", "url": "https://www.chinanews.com.cn/rss/society.xml"},
+    {"name": "中新网生活", "url": "https://www.chinanews.com.cn/rss/life.xml"},
+    {"name": "中新网文化", "url": "https://www.chinanews.com.cn/rss/culture.xml"}
+  ],
+  "baidu_trends": true,
+  "trend_feeds": [],
+  "max_source_age_days": 14,
+  "require_trend_match": true,
+  "keywords": ["奇闻", "趣闻", "地铁", "空轨", "街头", "网红", "古镇", "公园", "书店", "博物馆", "城市", "咖啡", "动物园", "熊猫", "重庆", "武汉", "天津"],
+  "exclude": ["死亡", "受伤", "案件", "凶", "谋杀", "法院", "通报", "犯罪", "医疗", "投资", "疾病", "灾害", "冲突", "战争", "传言", "网传", "灵异", "爆炸", "失踪", "诈骗", "股票", "暴雨", "坍塌"]
+}

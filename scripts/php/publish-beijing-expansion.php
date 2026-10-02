@@ -1,0 +1,9 @@
+<?php
+if(PHP_SAPI!=='cli')exit;
+require __DIR__.'/../../new-project/app/src/bootstrap.php';
+$summary=json_decode(file_get_contents(ROOT.'/.local/beijing-210/summary.json'),true);
+if(($summary['new_articles']??0)!==150||!empty($summary['issues']))throw new RuntimeException('150-story audit must pass first');
+$catalog=json_decode(file_get_contents(ROOT.'/.local/beijing-210/catalog.json'),true);$ids=array_column($catalog['items'],'id');$rows=[];
+foreach(query('SELECT a.id,m.metadata FROM mvp_articles a JOIN mvp_article_meta m ON m.article_id=a.id WHERE a.site_id=8')->fetchAll() as $row){$meta=json_decode($row['metadata'],true);if(in_array($meta['catalog_id']??'',$ids,true))$rows[]=[$row['id'],$meta];}
+if(count($rows)!==150)throw new RuntimeException('Expected 150 matching stories');
+db()->beginTransaction();try{query('SELECT id FROM mvp_sites WHERE id=8 FOR UPDATE');foreach($rows as [$id,$meta]){if(($meta['review']['approved']??false)!==true)throw new RuntimeException('Model review requires follow-up');$meta['publication_decision']=['mode'=>'owner-requested-local-preview','instruction'=>'继续补充到210篇，沿用北京地名背景原创鬼怪故事，不涉及军政','at'=>date(DATE_ATOM),'model_review_retained'=>true];query('UPDATE mvp_article_meta SET metadata=? WHERE article_id=?',[json_encode($meta,JSON_UNESCAPED_UNICODE),$id]);query('UPDATE mvp_articles SET status="published",published_at=COALESCE(published_at,NOW()),updated_at=NOW() WHERE id=? AND site_id=8',[$id]);query('UPDATE mvp_editorial_jobs SET status="published" WHERE article_id=? AND site_id=8',[$id]);}if((int)query('SELECT COUNT(*) FROM mvp_articles WHERE site_id=8 AND status="published"')->fetchColumn()!==210)throw new RuntimeException('Expected cumulative210 published stories');db()->commit();echo "Published150 new stories; cumulative210; original draft unchanged\n";}catch(Throwable $e){db()->rollBack();throw $e;}

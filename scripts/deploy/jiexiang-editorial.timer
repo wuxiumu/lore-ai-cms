@@ -1,0 +1,12 @@
+# Optional schedule, not installed or enabled by this task.
+[Unit]
+Description=Three editorial opportunities per day
+
+[Timer]
+OnCalendar=*-*-* 09,13,18:00:00 Asia/Shanghai
+Persistent=true
+RandomizedDelaySec=120
+Unit=jiexiang-editorial.service
+
+[Install]
+WantedBy=timers.target

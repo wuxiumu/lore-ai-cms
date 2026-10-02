@@ -1,0 +1,167 @@
+[
+  {
+    "title": "重庆为什么把一段大扶梯当成城市交通？",
+    "city": "重庆",
+    "story_type": "nonfiction",
+    "description": "从皇冠大扶梯看山城上下半城的通行方式，不以旧资料承诺当前票价和运营安排。",
+    "sources": [
+      {
+        "publisher": "重庆市渝中区人民政府",
+        "title": "皇冠大扶梯",
+        "url": "https://www.cqyz.gov.cn/zjyz/lyyz/rmdkd/202210/t20221011_11178929.html",
+        "date": "2022-10-11",
+        "role": "事实来源"
+      }
+    ]
+  },
+  {
+    "title": "南京颐和路：一条街为什么被叫作民国建筑博物馆？",
+    "city": "南京",
+    "story_type": "nonfiction",
+    "description": "关注街区院落和建筑的生活故事，避免把2024年的开放数量写成当前数据。",
+    "sources": [
+      {
+        "publisher": "南京市人民政府",
+        "title": "对市政协十五届二次会议第0559号提案的答复",
+        "url": "https://www.nanjing.gov.cn/xxgkn/jytabljggk/2024njytabl/shizxta/202411/t20241120_5014183.html",
+        "date": "2024-11-20",
+        "role": "事实来源"
+      }
+    ]
+  },
+  {
+    "title": "成都百年茶馆的城市八卦：年轻人为什么也愿意坐下来？",
+    "city": "成都",
+    "story_type": "nonfiction",
+    "description": "从鹤鸣茶社的日常交往和茶馆文化切入，只使用报道有依据的故事，不编造顾客对白。",
+    "sources": [
+      {
+        "publisher": "人民网四川频道",
+        "title": "这家百年老茶馆为何这么火？",
+        "url": "https://sc.people.com.cn/n2/2025/0815/c345167-41322655.html",
+        "date": "2025-08-15",
+        "role": "事实来源"
+      }
+    ]
+  },
+  {
+    "title": "北京北新桥的锁龙井：为什么这座桥总是新的？",
+    "city": "北京",
+    "story_type": "folklore",
+    "description": "讲述地名传说的叙事趣味，把锁龙故事明确作为民间传说，不当成历史证据或灵异实录。",
+    "sources": [
+      {
+        "publisher": "北京市人民政府",
+        "title": "趣说北京：北京地铁站名故事之北新桥站",
+        "url": "https://www.beijing.gov.cn/shipin/qushuobeijing/21790.html",
+        "date": "",
+        "role": "传说出处（非事实证明）"
+      }
+    ]
+  },
+  {
+    "title": "北新桥不只簋街：胡同与夜生活怎样挤在同一片街区？",
+    "city": "北京",
+    "story_type": "nonfiction",
+    "description": "从地名故事和现代街区日常切入，运营状态与活动日期需要再核实。",
+    "sources": [
+      {
+        "publisher": "北京市东城区人民政府",
+        "title": "我在北新桥等你",
+        "url": "https://www.bjdch.gov.cn/ztzl/wzdcdn/202609/t20260907_4853617.html",
+        "date": "2026-09-07",
+        "role": "事实来源"
+      }
+    ]
+  },
+  {
+    "title": "鬼故事·上海末班车：那位乘客总在下一站出现",
+    "city": "上海",
+    "story_type": "fiction",
+    "description": "原创虚构的都市鬼故事，人物、情节和线路名称虚构；地铁资料只作为城市背景，不能暗示运营方发生真实事件。",
+    "sources": [
+      {
+        "publisher": "上海市人民政府",
+        "title": "上海地铁最新换乘首末班车时刻表请收好",
+        "url": "https://www.shanghai.gov.cn/nw17239/20260113/4974c8b0add34af4af5fe946bba6cdfc.html",
+        "date": "2026-01-13",
+        "role": "场景背景（非事件证据）"
+      }
+    ]
+  },
+  {
+    "title": "鬼故事·山城雨夜：扶梯尽头多出来的一层",
+    "city": "重庆",
+    "story_type": "fiction",
+    "description": "原创虚构的城市怪谈，以坡地与上下半城作为场景灵感，具体场所和异常事件虚构。",
+    "sources": [
+      {
+        "publisher": "重庆市渝中区人民政府",
+        "title": "皇冠大扶梯",
+        "url": "https://www.cqyz.gov.cn/zjyz/lyyz/rmdkd/202210/t20221011_11178929.html",
+        "date": "2022-10-11",
+        "role": "场景背景（非事件证据）"
+      }
+    ]
+  },
+  {
+    "title": "鬼故事·广州旧街：打烊后还在响的第三扇卷帘门",
+    "city": "广州",
+    "story_type": "fiction",
+    "description": "原创虚构故事，利用骑楼雨夜的空间氛围，不对真实商铺或店主编造事故和传闻。",
+    "sources": [
+      {
+        "publisher": "广州市人民政府",
+        "title": "百年骑楼筑老城肌理 廊下烟火延千载商脉",
+        "url": "https://www.gz.gov.cn/zlgz/whgz/content/post_8564096.html",
+        "date": "2022-09-14",
+        "role": "场景背景（非事件证据）"
+      }
+    ]
+  },
+  {
+    "title": "鬼故事·南京旧公寓：窗里的人比我晚关灯一分钟",
+    "city": "南京",
+    "story_type": "fiction",
+    "description": "原创虚构的邻窗怪谈，地点与人物匿名虚构，历史街区介绍仅作为建筑背景。",
+    "sources": [
+      {
+        "publisher": "南京市人民政府",
+        "title": "对市政协十五届二次会议第0559号提案的答复",
+        "url": "https://www.nanjing.gov.cn/xxgkn/jytabljggk/2024njytabl/shizxta/202411/t20241120_5014183.html",
+        "date": "2024-11-20",
+        "role": "场景背景（非事件证据）"
+      }
+    ]
+  },
+  {
+    "title": "上海武康大楼的名字八卦：诺曼底公寓为什么换了名字？",
+    "city": "上海",
+    "story_type": "nonfiction",
+    "description": "候选示例：网站已写过武康大楼，标出来源重合供你判断是否另写角度。不能自行补写改名动机。",
+    "sources": [
+      {
+        "publisher": "上海市徐汇区人民政府",
+        "title": "壹月 | 转角遇见 武康大楼",
+        "url": "https://www.xuhui.gov.cn/zfjg_qzfbm_fgj_bmdt/20230128/509539.html",
+        "date": "2023-01-28",
+        "role": "事实来源"
+      }
+    ]
+  },
+  {
+    "title": "福州那棵会比心的树：一个拍照角度怎样带火老街？",
+    "city": "福州",
+    "story_type": "nonfiction",
+    "description": "候选示例：已写过同一香樟树话题，默认不选，便于验证来源去重。",
+    "sources": [
+      {
+        "publisher": "福州市人民政府",
+        "title": "烟台山“比心”香樟树走红",
+        "url": "https://www.fuzhou.gov.cn/zgfzzt/zjrc/rcyx/202605/t20260514_5321946.htm",
+        "date": "2026-05-12",
+        "role": "事实来源"
+      }
+    ]
+  }
+]

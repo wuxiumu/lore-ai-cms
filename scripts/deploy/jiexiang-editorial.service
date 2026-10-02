@@ -1,0 +1,19 @@
+[Unit]
+Description=Jiexiang original editorial pipeline
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=jiexiang
+Group=jiexiang
+WorkingDirectory=/srv/jiexiang
+EnvironmentFile=/etc/jiexiang/editorial.env
+ExecStart=/usr/bin/python3 /srv/jiexiang/scripts/editorial/pipeline.py run --limit 1
+UMask=0077
+TimeoutStartSec=900
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/jiexiang/.local
