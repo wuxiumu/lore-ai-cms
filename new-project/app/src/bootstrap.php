@@ -88,8 +88,8 @@ function adminNav(): string {
     $sections=['/admin/progress'=>'内容进度','/admin/articles'=>'文章（人工）','/admin/catalog'=>'AI 选题目录（人工确认）','/admin/static'=>'人工打包'];
     $active=in_array($path,['/admin/article','/admin/article/preview'],true)?'/admin/articles':(str_starts_with($path,'/admin/catalog')?'/admin/catalog':(str_starts_with($path,'/admin/static')?'/admin/static':$path));
     $switchPath=isset($sections[$active])?$active:'/admin/articles';
-    $html='<div class="toolbar"><div><a href="/admin">工作台</a><a href="/admin/promotion"'.(str_starts_with($path,'/admin/promotion')?' class="active" aria-current="page"':'').'>宣传页面</a><a href="/admin/site">新建站点</a><a href="/admin/models">大模型配置（人工）</a><a href="/admin/password">修改密码</a></div><form method="post" action="/admin/logout">'.csrf().'<button class="secondary">退出登录</button></form></div>';
-    if(str_starts_with($path,'/admin/promotion'))return $html;
+    $html='<div class="toolbar"><div><a href="/admin">工作台</a><a href="/admin/promotion"'.(str_starts_with($path,'/admin/promotion')?' class="active" aria-current="page"':'').'>宣传页面</a><a href="/admin/reader-settings">全局转图设置</a><a href="/admin/site">新建站点</a><a href="/admin/models">大模型配置（人工）</a><a href="/admin/password">修改密码</a></div><form method="post" action="/admin/logout">'.csrf().'<button class="secondary">退出登录</button></form></div>';
+    if(str_starts_with($path,'/admin/promotion') || $path==='/admin/reader-settings')return $html;
     $html.='<section class="admin-site-context" aria-label="当前子站"><p class="eyebrow">当前子站</p><h2>'.h($site['name']).'</h2><p>'.h($site['host']).'</p><div class="chips" aria-label="切换子站">';
     foreach(query('SELECT id,name FROM mvp_sites ORDER BY id') as $item) $html.='<a'.((int)$item['id']===$sid?' class="active" aria-current="page"':'').' href="'.$switchPath.'?site_id='.(int)$item['id'].'">'.h($item['name']).'</a>';
     $html.='</div><nav class="admin-tabs" aria-label="子站管理">';

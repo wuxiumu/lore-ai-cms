@@ -27,6 +27,7 @@ if (in_array($path,['/admin/promotion','/admin/promotion/download','/admin/promo
 if ($path==='/admin/static' || $path==='/admin/static/download') { require __DIR__.'/static-admin.php'; return; }
 if ($path==='/admin/catalog' || $path==='/admin/catalog/download') { require __DIR__.'/catalog-admin.php'; return; }
 if ($path==='/admin/progress') { require __DIR__.'/progress-admin.php'; return; }
+if ($path==='/admin/reader-settings') { require __DIR__.'/reader-settings-admin.php'; return; }
 if ($path==='/admin/models') { require __DIR__.'/models-admin.php'; return; }
 if ($path==='/admin/articles') { require __DIR__.'/articles-admin.php'; return; }
 if ($path==='/admin/model-trial') { require __DIR__.'/model-trial-admin.php'; return; }
@@ -84,7 +85,7 @@ if ($path==='/admin/site') {
     }
     $body=adminNav().'<section class="panel narrow"><p class="eyebrow">SITE SETTINGS</p><h1>'.($id?'编辑站点':'新建独立站点').'</h1><p class="notice">域名保存在本站设置，打包时自动读取。每个站点的内容主题和页面文件互相独立；保存不会自动上传服务器。</p>';
     if ($error) $body.='<p class="notice error">'.h($error).'</p>';
-    $body.='<form method="post">'.csrf().field('站点名称','name',$s['name']).field('域名（不带端口）','host',$s['host']).textfield('站点简介','description',$s['description']).field('首页 Title','seo_title',$s['seo_title']??'','text',false).textfield('首页 Description','seo_description',$s['seo_description']??'').field('Keywords（逗号分隔）','seo_keywords',$s['seo_keywords']??'','text',false).textfield('内容主题 / 写作方向','content_topic',$s['content_topic']??'').field('选题关键词（逗号分隔）','topic_keywords',$s['topic_keywords']??'','text',false).field('转图数量（1—20张，默认5张）','image_count',$s['image_count']??5,'number').textfield('转图提示词（本站独立配置）','image_prompt',trim((string)($s['image_prompt']??''))?:readerDefaultPrompt(),16).'<p class="hint">可用变量：{{count}} 为大图数量，{{panels}} 为总格数（数量×3）。标题、正文和来源链接会自动追加；清空提示词使用默认三格漫画方案。</p><p class="hint">文章页“转图”会复制正文和简约漫画素描提示词，不调用模型。静态站点修改数量后需重新打包。</p><label class="check"><input type="checkbox" name="indexable" value="1"'.($s['indexable']?' checked':'').'> 正式导出时允许搜索引擎收录</label><p class="hint">本地预览始终禁止收录。文章页使用文章标题和摘要；首页使用本站 TDK。</p><button>保存站点</button></form></section>';
+    $body.='<form method="post">'.csrf().field('站点名称','name',$s['name']).field('域名（不带端口）','host',$s['host']).textfield('站点简介','description',$s['description']).field('首页 Title','seo_title',$s['seo_title']??'','text',false).textfield('首页 Description','seo_description',$s['seo_description']??'').field('Keywords（逗号分隔）','seo_keywords',$s['seo_keywords']??'','text',false).textfield('内容主题 / 写作方向','content_topic',$s['content_topic']??'').field('选题关键词（逗号分隔）','topic_keywords',$s['topic_keywords']??'','text',false).field('转图数量（1—20张，默认5张）','image_count',$s['image_count']??5,'number').textfield('本站转图补充提示词（可为空，继承全局）','image_prompt',$s['image_prompt']??'',10).'<p class="hint">留空直接继承全局；填写后追加在全局规则后，也可用 {{global}} 插入全局规则。{{count}} 为大图数量，{{panels}} 为总格数。<a href="/admin/reader-settings">编辑全局转图提示词</a>。标题、正文和链接自动追加。</p><p class="hint">文章页“转图”会复制正文和简约漫画素描提示词，不调用模型。静态站点修改数量后需重新打包。</p><label class="check"><input type="checkbox" name="indexable" value="1"'.($s['indexable']?' checked':'').'> 正式导出时允许搜索引擎收录</label><p class="hint">本地预览始终禁止收录。文章页使用文章标题和摘要；首页使用本站 TDK。</p><button>保存站点</button></form></section>';
     page('站点设置',$body); return;
 }
 if ($path==='/admin/article/preview') {
