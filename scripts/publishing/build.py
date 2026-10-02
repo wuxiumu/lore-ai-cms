@@ -41,6 +41,7 @@ def build(site_id,preview=False):
         write('theme/script.js',snapshot['site']['_theme']['script.js'])
         shutil.copy2(ROOT/'scripts/publishing/search.js',public/'search.js')
         shutil.copy2(ROOT/'new-project/app/public/reader.css',public/'reader.css')
+        shutil.copy2(ROOT/'new-project/app/public/reader.js',public/'reader.js')
         for article in snapshot['articles']:
             meta=json.loads(article['metadata'] or '{}');cover=meta.get('cover','')
             if re.fullmatch('[a-z-]+',cover) and (ROOT/'new-project/app/public/covers'/f'{cover}.svg').is_file():

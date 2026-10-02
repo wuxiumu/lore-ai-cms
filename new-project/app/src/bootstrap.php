@@ -56,6 +56,7 @@ function page(string $title, string $body, ?array $site=null, string $descriptio
     $footer=readerFooter($site);
     if(str_contains($html,'<footer'))$html=preg_replace('~<footer\b~',$footer.'<footer',$html,1);
     else $html=str_replace('</body>',$footer.'</body>',$html);
+    $html=str_replace('</body>','<script src="/reader.js" defer nonce="'.h(defined('CSP_NONCE')?CSP_NONCE:'').'"></script></body>',$html);
     echo $html;
 }
 function field(string $label, string $name, mixed $value='', string $type='text', bool $required=true): string { return '<label>'.h($label).'<input type="'.h($type).'" name="'.h($name).'" value="'.h($value).'"'.($required?' required':'').'></label>'; }
