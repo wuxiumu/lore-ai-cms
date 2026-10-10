@@ -3,6 +3,9 @@
 from pathlib import Path
 import argparse,subprocess,sys,json
 ROOT=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'scripts/native'))
+from envfile import load_env
+load_env(ROOT)
 COMMANDS={
  'start':('python3','scripts/native/run.py','start'),
  'stop':('python3','scripts/native/run.py','stop'),

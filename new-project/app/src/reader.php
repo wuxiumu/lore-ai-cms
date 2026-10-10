@@ -7,9 +7,28 @@ function readerNavigation(?array $previous, ?array $next): string {
     }
     return $out.'</nav>';
 }
+function readerEnv(string $name,string $fallback,callable $valid): string {
+    $value=getenv($name);
+    if(!is_string($value)) return $fallback;
+    $value=trim($value);
+    return $value!=='' && $valid($value)?$value:$fallback;
+}
+function readerContact(): array {
+    return [
+        'email'=>readerEnv('LORE_CONTACT_EMAIL','wuxiumu@163.com',fn($v)=>filter_var($v,FILTER_VALIDATE_EMAIL) && strlen($v)<=120),
+        'wechat'=>readerEnv('LORE_CONTACT_WECHAT','qingbao199101',fn($v)=>preg_match('/^[A-Za-z0-9_-]{1,64}$/',$v)===1),
+        'wechat_qr'=>readerEnv('LORE_SPONSOR_WECHAT_URL','https://chiguashentan-test.oss-cn-beijing.aliyuncs.com/wxprogram/zan/20261002185236_31_227.png',fn($v)=>readerHttps($v)),
+        'alipay_qr'=>readerEnv('LORE_SPONSOR_ALIPAY_URL','https://chiguashentan-test.oss-cn-beijing.aliyuncs.com/wxprogram/zan/20261002185309_32_227.jpg',fn($v)=>readerHttps($v)),
+    ];
+}
+function readerHttps(string $url): bool {
+    $p=parse_url($url);
+    return is_array($p) && ($p['scheme']??'')==='https' && !empty($p['host']) && empty($p['user']) && empty($p['pass']) && strlen($url)<=500;
+}
 function readerFooter(array $site): string {
     $about=defined('STATIC_EXPORT')?'/about.html':'/about';
-    return '<section class="reader-footer" aria-label="关于我们、联系与赞助"><div class="reader-footer-inner"><div><h2>关于我们</h2><p>'.h($site['name']).'，记录城市故事，与好奇的人分享阅读的乐趣。</p><p><a href="'.$about.'">了解本站 →</a></p></div><div><h2>联系方式</h2><p>邮箱：<a href="mailto:wuxiumu@163.com">wuxiumu@163.com</a></p><p>微信：<strong>qingbao199101</strong><br>添加好友请备注来意。</p></div><div class="reader-support"><h2>赞助支持</h2><p>如果故事让你喜欢，欢迎自愿赞助。</p><div class="reader-codes"><figure><button type="button" class="reader-code-button" aria-label="放大赞助码" aria-haspopup="dialog"><img src="https://chiguashentan-test.oss-cn-beijing.aliyuncs.com/wxprogram/zan/20261002185236_31_227.png" alt="微信赞赏码，点击查看大图" loading="lazy" width="160" height="160"></button><figcaption>微信赞赏码</figcaption></figure><figure><button type="button" class="reader-code-button" aria-label="放大赞助码" aria-haspopup="dialog"><img src="https://chiguashentan-test.oss-cn-beijing.aliyuncs.com/wxprogram/zan/20261002185309_32_227.jpg" alt="支付宝收款码，点击查看大图" loading="lazy" width="160" height="160"></button><figcaption>支付宝收款码</figcaption></figure></div></div></div></section><dialog class="reader-lightbox" aria-labelledby="reader-code-title"><div class="reader-lightbox-panel"><button type="button" class="reader-lightbox-close" aria-label="关闭大图" autofocus>×</button><h2 id="reader-code-title">赞助码</h2><img class="reader-lightbox-image" alt=""><p>感谢你的支持</p></div></dialog>';
+    $c=readerContact();
+    return '<section class="reader-footer" aria-label="关于我们、联系与赞助"><div class="reader-footer-inner"><div><h2>关于我们</h2><p>'.h($site['name']).'，记录城市故事，与好奇的人分享阅读的乐趣。</p><p><a href="'.$about.'">了解本站 →</a></p></div><div><h2>联系方式</h2><p>邮箱：<a href="mailto:'.h($c['email']).'">'.h($c['email']).'</a></p><p>微信：<strong>'.h($c['wechat']).'</strong><br>添加好友请备注来意。</p></div><div class="reader-support"><h2>赞助支持</h2><p>如果故事让你喜欢，欢迎自愿赞助。</p><div class="reader-codes"><figure><button type="button" class="reader-code-button" aria-label="放大赞助码" aria-haspopup="dialog"><img src="'.h($c['wechat_qr']).'" alt="微信赞赏码，点击查看大图" loading="lazy" width="160" height="160"></button><figcaption>微信赞赏码</figcaption></figure><figure><button type="button" class="reader-code-button" aria-label="放大赞助码" aria-haspopup="dialog"><img src="'.h($c['alipay_qr']).'" alt="支付宝收款码，点击查看大图" loading="lazy" width="160" height="160"></button><figcaption>支付宝收款码</figcaption></figure></div></div></div></section><dialog class="reader-lightbox" aria-labelledby="reader-code-title"><div class="reader-lightbox-panel"><button type="button" class="reader-lightbox-close" aria-label="关闭大图" autofocus>×</button><h2 id="reader-code-title">赞助码</h2><img class="reader-lightbox-image" alt=""><p>感谢你的支持</p></div></dialog>';
 }
 
 function readerDefaultPrompt(): string {

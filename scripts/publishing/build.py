@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Take a consistent local content snapshot, render HTML and zip public files only."""
 from pathlib import Path
-import argparse, datetime as dt, fcntl, hashlib, ipaddress, json, re, shutil, subprocess, sys, tempfile, urllib.parse, xml.etree.ElementTree as ET, zipfile
+import argparse, datetime as dt, fcntl, hashlib, ipaddress, json, os, re, shutil, subprocess, sys, tempfile, urllib.parse, xml.etree.ElementTree as ET, zipfile
 ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT/'scripts/native'))
+from envfile import load_env
+load_env(ROOT)
 CONFIG=ROOT/'.local/publishing.json'
 
 def command(args,payload=None):
@@ -78,9 +81,41 @@ def build(site_id,preview=False):
         temp=releases/'latest.tmp';temp.write_text(json.dumps(manifest,ensure_ascii=False,indent=2));temp.replace(latest_path)
         return manifest
 
+def dry_run():
+    """Render a fixture through the export template and check SEO fields. No database and no release files."""
+    php=shutil.which('php')
+    if not php: raise SystemExit('PHP CLI missing. Install PHP 8.3+ with mbstring to run the export dry-run.')
+    validate_base('https://example.com')
+    try: validate_base('http://localhost/path')
+    except ValueError: pass
+    else: raise SystemExit('dry-run: a non-HTTPS local URL was accepted')
+    theme={'layout.html':'<!doctype html><html lang="zh-CN"><head>{{head}}</head><body><main>{{content}}</main></body></html>','home.html':'{{content}}','article.html':'{{content}}','category.html':'{{content}}','simple.html':'{{content}}','style.css':'','script.js':''}
+    site={'id':1,'name':'示例站','host':'example.com','base_url':'https://example.com','description':'站点简介','seo_title':'示例站首页标题','seo_description':'示例站首页描述','seo_keywords':'城市,故事','content_topic':'城市故事','indexable':1,'_theme':theme}
+    articles=[{'id':1,'slug':'sample-story','title':'示例文章','description':'示例摘要','category':'掌故','content':'第一段\n\n## 小标题\n\n第二段','published_at':'2026-01-01 00:00:00','updated_at':'2026-01-02 00:00:00','metadata':json.dumps({'keywords':['胡同','夜谈'],'author':'示例编辑部'},ensure_ascii=False)}]
+    env=os.environ.copy(); env['LORE_CONTACT_EMAIL']='dry-run@example.com'
+    result=subprocess.run([php,str(ROOT/'scripts/php/static-render.php')],input=json.dumps({'site':site,'articles':articles,'base_url':'https://example.com','production':True},ensure_ascii=False),text=True,capture_output=True,env=env,cwd=ROOT)
+    if result.returncode: raise SystemExit(result.stderr.strip()[:600] or 'dry-run renderer failed')
+    rendered=json.loads(result.stdout); pages=rendered['pages']; home=pages['index.html']; article=pages['article/sample-story.html']
+    checks={
+        'home title':'示例站首页标题' in home,
+        'home description':'示例站首页描述' in home,
+        'home keywords':'name="keywords" content="城市,故事"' in home,
+        'canonical':'rel="canonical" href="https://example.com/"' in home,
+        'og site':'property="og:site_name" content="示例站"' in home,
+        'article keywords meta':'name="keywords" content="胡同,夜谈"' in article,
+        'article jsonld keywords':'"keywords":["胡同","夜谈"]' in article,
+        'contact override':'mailto:dry-run@example.com' in article,
+        'sponsor':'微信赞赏码' in article and '支付宝收款码' in article,
+    }
+    failed=[name for name,ok in checks.items() if not ok]
+    if failed: raise SystemExit('dry-run SEO checks failed: '+', '.join(failed))
+    print(json.dumps({'dry_run':True,'html_count':len(pages),'indexable_urls':len(rendered['urls']),'seo_checks':len(checks),'release_written':False},ensure_ascii=False,indent=2))
+
 def main():
     c=json.loads(CONFIG.read_text()) if CONFIG.exists() else {}
-    p=argparse.ArgumentParser();p.add_argument('--site-id',type=int,default=c.get('site_id',2));p.add_argument('--preview',action='store_true');args=p.parse_args()
+    p=argparse.ArgumentParser(description='导出静态站点。--dry-run 不连接数据库，也不写入发布目录。')
+    p.add_argument('--site-id',type=int,default=c.get('site_id',2));p.add_argument('--preview',action='store_true');p.add_argument('--dry-run',action='store_true');args=p.parse_args()
+    if args.dry_run: dry_run(); return
     m=build(args.site_id,args.preview)
     print(json.dumps({k:v for k,v in m.items() if k not in ('files','known_paths')},ensure_ascii=False,indent=2))
 if __name__=='__main__': main()

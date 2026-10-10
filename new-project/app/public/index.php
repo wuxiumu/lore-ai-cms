@@ -6,7 +6,9 @@ define('CSP_NONCE',base64_encode(random_bytes(18)));
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
-header("Content-Security-Policy: default-src 'self'; script-src 'nonce-".CSP_NONCE."'; style-src 'self'; img-src 'self' data: https://chiguashentan-test.oss-cn-beijing.aliyuncs.com; form-action 'self'; frame-ancestors 'self'; base-uri 'none'");
+$imgHosts='';
+foreach(readerContact() as $key=>$url){ if(!str_ends_with($key,'_qr')) continue; $host=strtolower((string)parse_url($url,PHP_URL_HOST)); if($host!=='' && !str_contains($imgHosts,' https://'.$host)) $imgHosts.=' https://'.$host; }
+header("Content-Security-Policy: default-src 'self'; script-src 'nonce-".CSP_NONCE."'; style-src 'self'; img-src 'self' data:".$imgHosts."; form-action 'self'; frame-ancestors 'self'; base-uri 'none'");
 set_exception_handler(function(Throwable $e) { error_log($e->__toString()); fail('服务暂时不可用，请查看本地日志',500); });
 $host=strtolower(parse_url('http://'.($_SERVER['HTTP_HOST']??''),PHP_URL_HOST)??'');
 $local=in_array($host,['localhost','127.0.0.1','::1'],true)||preg_match('/^site-[1-9][0-9]*\.localhost$/',$host);
@@ -68,6 +70,8 @@ if (preg_match('~^/article/([a-z0-9][a-z0-9-]{0,159})\.html$~',$path,$m)) {
     foreach(query("SELECT title,slug FROM mvp_articles WHERE site_id=? AND status='published' AND id<>? ORDER BY (category=?) DESC,published_at DESC LIMIT 4",[$site['id'],$a['id'],$a['category']]) as $r) $body.='<p><a href="/article/'.h($r['slug']).'.html">'.h($r['title']).' →</a></p>';
     $body.='<a href="/">返回全部文章 →</a></section>';
     $structured=['@context'=>'https://schema.org','@type'=>'Article','headline'=>$a['title'],'description'=>$a['description'],'datePublished'=>date(DATE_ATOM,strtotime($a['published_at'])),'dateModified'=>date(DATE_ATOM,strtotime($a['updated_at'])),'inLanguage'=>'zh-CN','mainEntityOfPage'=>$base.$path,'author'=>['@type'=>'Organization','name'=>$meta['author']??$site['name'].'编辑部'],'publisher'=>['@type'=>'Organization','name'=>$site['name']],'articleSection'=>$a['category']];
+    $keywords=array_values(array_filter(array_map('trim',explode(',',(string)($site['seo_keywords']??''))),fn($x)=>$x!==''));
+    if($keywords) $structured['keywords']=$keywords;
     page($a['title'],$body,$site,$a['description'],$base.$path,false,$structured); exit;
 }
 $category=null;

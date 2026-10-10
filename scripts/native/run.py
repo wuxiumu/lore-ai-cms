@@ -3,6 +3,8 @@
 from pathlib import Path
 import json, os, shutil, signal, subprocess, sys, time, urllib.request
 ROOT=Path(__file__).resolve().parents[2]
+from envfile import load_env
+load_env(ROOT)
 STATE=ROOT/'.local/server.json'
 
 def alive(state):
