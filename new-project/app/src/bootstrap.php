@@ -2,6 +2,8 @@
 declare(strict_types=1);
 const ROOT = __DIR__ . '/../../..';
 date_default_timezone_set('Asia/Shanghai');
+require_once ROOT.'/scripts/php/env.php';
+load_env_file(ROOT.'/.env');
 require_once __DIR__.'/themes.php';
 require_once __DIR__.'/reader.php';
 function db(): PDO {
@@ -36,7 +38,7 @@ function page(string $title, string $body, ?array $site=null, string $descriptio
     if ($noindex || !$site || !indexable($site)) echo '<meta name="robots" content="noindex,nofollow">';
     if ($canonical) {
         echo '<link rel="canonical" href="'.h($canonical).'">';
-        echo '<meta property="og:url" content="'.h($canonical).'"><meta property="og:title" content="'.h($fullTitle).'"><meta property="og:description" content="'.h($description ?: ($site['description']??'')).'"><meta property="og:locale" content="zh_CN"><meta property="og:type" content="'.($structured?'article':'website').'">';
+        echo '<meta property="og:url" content="'.h($canonical).'"><meta property="og:title" content="'.h($fullTitle).'"><meta property="og:description" content="'.h($description ?: ($site['description']??'')).'"><meta property="og:site_name" content="'.h($brand).'"><meta property="og:locale" content="zh_CN"><meta property="og:type" content="'.($structured?'article':'website').'">';
     }
     if ($structured) echo '<script type="application/ld+json" nonce="'.h(defined('CSP_NONCE')?CSP_NONCE:'').'">'.json_encode($structured,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT).'</script>';
     echo '<link rel="stylesheet" href="/style.css"></head><body class="'.($brand==='街巷奇闻'?'urban':'standard').'"><header><a class="brand" href="/">'.h($brand).'<span class="dot"></span></a><nav><a href="/">网站首页</a><a href="/about">关于本站</a><a href="/sitemap.xml">站点地图</a>'.(defined('STATIC_EXPORT')?'':'<a href="/admin">管理工作台 ↗</a>').'</nav></header><main>'.$body.'</main><footer><span>'.h($brand).' © '.date('Y').'</span><span>好奇有据 · 阅读有趣</span></footer></body></html>';

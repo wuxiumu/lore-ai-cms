@@ -45,7 +45,8 @@ foreach($articles as $articleIndex=>$a) {
     $body.='<a href="/">返回全部文章 →</a></section>';
     $schema=['@context'=>'https://schema.org','@type'=>'Article','headline'=>$a['title'],'description'=>$a['description'],'datePublished'=>date(DATE_ATOM,strtotime($a['published_at'])),'dateModified'=>date(DATE_ATOM,strtotime($a['updated_at'])),'mainEntityOfPage'=>$base.$url,'inLanguage'=>'zh-CN','author'=>['@type'=>'Organization','name'=>$a['meta']['author']??$site['name'].'编辑部'],'publisher'=>['@type'=>'Organization','name'=>$site['name']],'articleSection'=>$a['category']];
     $siteKeywords=$site['seo_keywords']??'';
-    if(!empty($a['meta']['keywords'])) $site['seo_keywords']=implode(',',array_filter($a['meta']['keywords'],'is_string'));
+    $keywords=!empty($a['meta']['keywords'])?array_values(array_filter($a['meta']['keywords'],'is_string')):array_values(array_filter(array_map('trim',explode(',',(string)$siteKeywords)),fn($x)=>$x!==''));
+    if($keywords){ $site['seo_keywords']=implode(',',$keywords); $schema['keywords']=$keywords; }
     emitpage($url,$a['title'],$body,$a['description'],false,$schema);
     $site['seo_keywords']=$siteKeywords;
 }

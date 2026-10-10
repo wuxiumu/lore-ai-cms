@@ -2,6 +2,8 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 $root=dirname(__DIR__,2); $dir=$root.'/.local';
+require_once dirname(__DIR__).'/php/env.php';
+load_env_file($root.'/.env');
 if (!is_dir($dir)) mkdir($dir,0700,true);
 if (is_file($dir.'/native.json')) { echo "Existing database configuration retained.\n"; exit; }
 // Provisioning credentials are independent of the legacy project.

@@ -35,7 +35,7 @@ php -m                   # 检查上述 PHP 扩展
 python3 project.py start
 ```
 
-首次启动会创建独立数据库、运行账户、数据表和两个示例站点。默认尝试连接 `127.0.0.1` 的 MySQL root 空密码账户；有密码时先通过环境变量配置 `MVP_DB_ADMIN_HOST`、`MVP_DB_ADMIN_USER`、`MVP_DB_ADMIN_PASSWORD`，再启动。管理账户须有创建数据库、用户及授权的权限。程序不会重置已有配置。
+首次启动会创建独立数据库、运行账户、数据表和两个示例站点。默认尝试连接 `127.0.0.1` 的 MySQL root 空密码账户。MySQL 有密码，或需要替换页脚联系方式时，先复制 `.env.example` 为 `.env` 再填写。`python3 project.py` 和 PHP 会读取这个文件；进程里已经设置的环境变量优先，不会被 `.env` 覆盖。管理账户须有创建数据库、用户及授权的权限。程序不会重置已有 `.local/native.json`。不要提交 `.env`。
 
 打开 `http://localhost:8080/admin`，从本机 `.local/admin-credentials.txt` 读取初始密码，登录后修改。后台设置自己的域名、TDK、选题与内容。
 
@@ -48,6 +48,38 @@ python3 project.py stop
 ```
 
 正式 ZIP 位于 `.local/releases/site-ID/`。解压后将网站文件上传到域名对应的根目录；上传前检查首页、链接、域名与 robots 设置。不要上传本项目根目录或 `.local`。
+
+## 静态导出
+
+```sh
+python3 project.py build --dry-run          # 不连数据库，不写 ZIP，检查渲染与 SEO 字段
+python3 project.py build --site-id 1 --preview   # 本地预览包，地址固定为 127.0.0.1:8081，禁止收录
+python3 project.py build --site-id 1        # 正式包，读取该站已保存的 HTTPS 根域名
+python3 project.py preview                  # 预览已生成的静态包
+```
+
+`--dry-run` 只需要 PHP 8.3+（含 `mbstring`），用来确认导出模板仍输出首页 TDK、文章关键词、canonical、Open Graph 和页脚联系方式。正式打包还需要本机 MySQL 里已有该站点；`--preview` 不要求公网域名。`--site-id` 省略时读取 `.local/publishing.json` 的 `site_id`，没有该文件时默认为 `2`。
+
+## 定制：联系、赞助与 SEO / GEO
+
+页脚的关于、邮箱、微信和微信 / 支付宝赞助码由 `new-project/app/src/reader.php` 渲染，静态包会带上。交互说明见 [文章翻页与联系赞助](doc/open-source/04-文章翻页与联系赞助.md)。定制交付时在 `.env` 覆盖下面的变量，留空则保持内置维护者信息：
+
+| 变量 | 作用 |
+| --- | --- |
+| `LORE_CONTACT_EMAIL` | 页脚邮箱 |
+| `LORE_CONTACT_WECHAT` | 页脚微信号 |
+| `LORE_SPONSOR_WECHAT_URL` | 微信赞赏码 https 图片 |
+| `LORE_SPONSOR_ALIPAY_URL` | 支付宝收款码 https 图片 |
+
+SEO / GEO（Generative Engine Optimization，面向生成式引擎的可读信息）使用站点里已经保存的字段，不另做一套标记：
+
+- 首页标题、描述、关键词分别是站点设置里的首页 Title、Description、Keywords。
+- 文章页标题和描述用文章标题、摘要；关键词优先用文章 metadata 的 `keywords`，否则用站点 Keywords。导出时同时写入 `<meta name="keywords">` 和 Article JSON-LD 的 `keywords`。
+- 有规范地址的页面输出 canonical，以及 `og:title`、`og:description`、`og:url`、`og:site_name`、`og:locale`、`og:type`。
+- 文章 JSON-LD 还包含 headline、description、发布与更新时间、author、publisher、articleSection。首页不另写 WebSite JSON-LD。
+- 正式包在站点允许收录且域名为公网 HTTPS 时写 `Allow` 与 sitemap；预览包和本地域名写 `Disallow: /`。
+
+后台「设置 / TDK」里的说明与上述导出行为一致。程序不保证搜索引擎或生成式引擎收录。更换联系方式或 TDK 后需要重新打包上传。
 
 ## AI 内容流程
 
@@ -68,6 +100,7 @@ python3 project.py draft-qwen --site-id 1
 | `new-project/themes/` | 站点主题实例 |
 | `scripts/` | 本地运行、内容生成、静态发布与检查 |
 | `project.py` | 根目录统一命令入口 |
+| `.env.example` | 数据库、模型 Key、联系方式与赞助码的环境变量样例 |
 | `doc/open-source/` | 公共架构、使用范围、路线图和发布说明 |
 | `.local/` | 私有运行数据，不提交 |
 
